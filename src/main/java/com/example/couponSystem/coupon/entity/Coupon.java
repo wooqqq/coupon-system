@@ -24,4 +24,11 @@ public class Coupon {
 
     private int issuedQuantity;
 
+    public void issue() {
+        if (this.issuedQuantity >= this.totalQuantity) {
+            throw new IllegalStateException("쿠폰이 모두 소진되었습니다.");
+        }
+        this.issuedQuantity++;
+    }
+
 }

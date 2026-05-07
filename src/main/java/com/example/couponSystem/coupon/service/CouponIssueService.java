@@ -8,6 +8,7 @@ import com.example.couponSystem.user.entity.User;
 import com.example.couponSystem.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class CouponIssueService {
     private final UserRepository userRepository;
     private final CouponIssueRepository couponIssueRepository;
 
+    @Transactional
     public Long issueCoupon(Long couponId, Long userId) {
         // 1. 쿠폰 조회
         Coupon coupon = couponRepository.findById(couponId)
@@ -30,6 +32,9 @@ public class CouponIssueService {
         if (couponIssueRepository.existsByCouponIdAndUserId(couponId, userId)) {
             throw new IllegalStateException("이미 발급받은 쿠폰입니다.");
         }
+
+        // 4. 재고 확인 및 감소
+        coupon.issue();
 
         CouponIssue couponIssue = CouponIssue.builder()
                 .coupon(coupon)
