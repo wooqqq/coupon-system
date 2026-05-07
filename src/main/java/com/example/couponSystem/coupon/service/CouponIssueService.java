@@ -32,8 +32,8 @@ public class CouponIssueService {
         }
 
         CouponIssue couponIssue = CouponIssue.builder()
-                .couponId(couponId)
-                .userId(userId)
+                .coupon(coupon)
+                .user(user)
                 .build();
 
         return couponIssueRepository.save(couponIssue).getId();
