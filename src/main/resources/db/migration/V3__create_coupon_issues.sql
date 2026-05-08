@@ -1,4 +1,4 @@
-CREATE TABLE coupon_issue (
+CREATE TABLE coupon_issues (
     id         BIGINT   AUTO_INCREMENT PRIMARY KEY,
     coupon_id  BIGINT   NOT NULL,
     user_id    BIGINT   NOT NULL,

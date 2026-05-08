@@ -1,4 +1,4 @@
-CREATE TABLE coupon (
+CREATE TABLE coupons (
     id             BIGINT       AUTO_INCREMENT PRIMARY KEY,
     name           VARCHAR(255) NOT NULL,
     total_quantity INT          NOT NULL,
