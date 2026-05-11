@@ -3,6 +3,7 @@ package com.example.couponSystem;
 import com.example.couponSystem.coupon.entity.Coupon;
 import com.example.couponSystem.coupon.repository.CouponIssueRepository;
 import com.example.couponSystem.coupon.repository.CouponRepository;
+import com.example.couponSystem.coupon.service.CouponIssueFacade;
 import com.example.couponSystem.coupon.service.CouponIssueService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class CouponIssueServiceTest {
 
     @Autowired
-    private CouponIssueService couponIssueService;
+    private CouponIssueFacade couponIssueFacade;
 
     @Autowired
     private CouponIssueRepository couponIssueRepository;
@@ -48,7 +49,7 @@ public class CouponIssueServiceTest {
             long userId = i;
             executorService.submit(() -> {
                 try {
-                    couponIssueService.issueCoupon(couponId, userId);
+                    couponIssueFacade.issueCoupon(couponId, userId);
                 } catch (Exception e) {
                     // 재고 소진 예외는 무시
                 } finally {
