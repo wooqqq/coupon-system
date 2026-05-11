@@ -21,7 +21,7 @@ public class CouponIssueService {
     @Transactional
     public Long issueCoupon(Long couponId, Long userId) {
         // 1. 쿠폰 조회
-        Coupon coupon = couponRepository.findByIdWithPessimisticLock(couponId)
+        Coupon coupon = couponRepository.findByIdWithOptimisticLock(couponId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 쿠폰입니다."));
 
         // 2. 사용자 조회

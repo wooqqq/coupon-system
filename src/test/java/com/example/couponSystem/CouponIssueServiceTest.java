@@ -31,7 +31,7 @@ public class CouponIssueServiceTest {
             long userId = i;
             executorService.submit(() -> {
                 try {
-                    couponIssueService.issueCoupon(1L, userId);
+                    couponIssueService.issueCoupon(4L, userId);
                 } catch (Exception e) {
                     // 재고 소진 예외는 무시
                 } finally {
@@ -42,7 +42,7 @@ public class CouponIssueServiceTest {
 
         latch.await();
 
-        long count = couponIssueRepository.count();
+        long count = couponIssueRepository.countByCouponId(4L);
         System.out.println("발급된 쿠폰 수: " + count);
         assertThat(count).isEqualTo(10);
     }
