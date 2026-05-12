@@ -12,14 +12,23 @@ public class CouponIssueFacade {
 
     public void issueCoupon(Long couponId, Long userId) {
         int maxRetry = 10;
-        for  (int i = 0; i < maxRetry; i++) {
+        long waitTime = 50;
+
+        for (int i = 0; i < maxRetry; i++) {
             try {
                 couponIssueService.issueCoupon(couponId, userId);
                 return;
             } catch (ObjectOptimisticLockingFailureException e) {
-                // 충돌 감지 → 재시도
+                if (i == maxRetry - 1) {
+                    throw new RuntimeException("쿠폰 발급 실패 (재시도 횟수 초과)");
+                }
+                try {
+                    Thread.sleep(waitTime);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+                waitTime *= 2;
             }
         }
-        throw new RuntimeException("쿠폰 발급 실패 (재시도 횟수 초과)");
     }
 }
