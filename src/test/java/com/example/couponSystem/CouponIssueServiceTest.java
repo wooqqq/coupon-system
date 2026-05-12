@@ -44,6 +44,8 @@ public class CouponIssueServiceTest {
         ExecutorService executorService = Executors.newFixedThreadPool(32);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
+        long start = System.currentTimeMillis();
+
         for (int i = 1; i <= threadCount; i++) {
             long userId = i;
             executorService.submit(() -> {
@@ -56,8 +58,6 @@ public class CouponIssueServiceTest {
                 }
             });
         }
-
-        long start = System.currentTimeMillis();
 
         latch.await();
 
