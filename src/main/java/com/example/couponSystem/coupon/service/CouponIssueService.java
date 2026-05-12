@@ -7,6 +7,7 @@ import com.example.couponSystem.coupon.repository.CouponRepository;
 import com.example.couponSystem.user.entity.User;
 import com.example.couponSystem.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +42,11 @@ public class CouponIssueService {
                 .user(user)
                 .build();
 
-        return couponIssueRepository.save(couponIssue).getId();
+        try {
+            return couponIssueRepository.save(couponIssue).getId();
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException("이미 발급받은 쿠폰입니다.");
+        }
 
     }
 }
