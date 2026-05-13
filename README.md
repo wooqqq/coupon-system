@@ -53,6 +53,7 @@ com.example.couponSystem
 │   ├── repository
 │   └── service
 └── global
+    ├── exception
     └── response
 ```
 
@@ -298,3 +299,35 @@ Nginx가 라운드로빈으로 요청을 app1, app2에 번갈아 분산시키는
 ### 분산 락의 역할
 
 서버가 여러 대여도 Redis가 중앙에서 락을 조율하기 때문에, 어느 서버로 요청이 들어오든 동일한 쿠폰에 대한 동시 접근이 제어된다. DB 락(비관적/낙관적)은 단일 서버 환경에서는 유효하지만, 다중 서버 환경에서는 각 서버가 독립적으로 DB에 접근하기 때문에 Redis 분산 락이 필요하다.
+
+
+---
+
+## 8단계: API 예외 처리 정책
+
+### 배경
+예외가 발생해도 Spring 기본 동작은 모든 오류를 `500 Internal Server Error`로 퉁쳐서 내려준다.
+클라이언트 입장에서는 "중복 발급이라서 실패한 건지", "서버가 터진 건지" 구분할 수 없다.
+
+### 해결
+`@RestControllerAdvice`로 글로벌 예외 핸들러(`GlobalExceptionHandler`)를 추가해 예외 유형별로 HTTP 상태 코드를 명확히 정의했다.
+
+| 예외 | HTTP 코드 | 발생 상황 |
+|------|----------|----------|
+| `IllegalArgumentException` | 404 Not Found | 존재하지 않는 쿠폰/유저 요청 |
+| `IllegalStateException` | 409 Conflict | 중복 발급 시도, 재고 소진 |
+| `RuntimeException` | 503 Service Unavailable | 락 획득 실패, 재시도 횟수 초과 |
+
+컨트롤러마다 try-catch를 두는 대신 한 곳에서 중앙 처리해 관심사를 분리했다.
+
+### 응답 형식
+모든 응답은 공통 `ApiResponse` 형식으로 내려간다.
+
+**성공 (200)**
+```json
+{"resultCode": "Success", "resultMessage": "성공", "data": null}
+```
+**실패 (409)**
+```json
+{"resultCode": "Fail", "resultMessage": "이미 발급받은 쿠폰입니다.", "data": null}
+```
